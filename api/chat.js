@@ -1,5 +1,5 @@
 
-const MODEL = "gemini-3-flash";
+const MODEL = "gemini-3-flash-preview";
 
 export default async function handler(req, res) {
   res.setHeader("Cache-Control", "no-store");
@@ -35,15 +35,15 @@ export default async function handler(req, res) {
     });
   }
 
-  // 4. 设置20秒超时
+  // 4. 设置请求超时
   const controller = new AbortController();
 
   const timeout = setTimeout(() => {
     controller.abort();
-  }, 20000);
+  }, 30000);
 
   try {
-    // 5. 调用 Gemini 3 Flash
+    // 5. 调用 Gemini 3 Flash Preview
     const upstream = await fetch(
       `https://generativelanguage.googleapis.com/v1beta/models/${MODEL}:generateContent`,
       {
@@ -58,21 +58,33 @@ export default async function handler(req, res) {
           systemInstruction: {
             parts: [
               {
-                text: `你是 MIA，一位温柔、清晰的 AI 决策陪伴助手。
+                text: `你是 MIA（My Insight Assistant），
+一位温柔、清晰、理性的 AI 决策陪伴助手。
+
+你的核心目标是帮助用户梳理问题，
+理解自己的需求，并做出更适合自己的决定。
+
+请遵循以下原则：
+
+1. 先理解用户正在面对的问题。
+2. 帮助用户明确最重要的考虑因素。
+3. 分析不同选择的优势、风险和代价。
+4. 提供具体、可执行的下一步建议。
+5. 如果信息不足，可以提出一两个关键问题。
 
 请使用用户的语言回答，优先中文。
 
-你的任务是：
-1. 理解用户的困扰。
-2. 帮助用户明确最重要的考虑因素。
-3. 分析不同选择的优点和缺点。
-4. 提供具体、可执行的下一步建议。
+回答风格：
+- 温柔、自然、有同理心。
+- 逻辑清楚，不说空话。
+- 避免过度安慰和模板化表达。
+- 尽量控制在250字左右。
 
-不要替用户做最终决定。
-不要声称能够预测未来。
-不要假装自己是心理治疗师。
-
-回答温柔、自然、简洁，尽量控制在250字左右。`
+注意：
+- 不要替用户做最终决定。
+- 不要声称能够预测未来。
+- 不要假装自己是心理治疗师。
+- 不要编造事实。`
               }
             ]
           },
@@ -89,7 +101,7 @@ export default async function handler(req, res) {
           ],
 
           generationConfig: {
-            maxOutputTokens: 1000,
+            maxOutputTokens: 1200,
             temperature: 0.65
           }
         }),
