@@ -1,5 +1,5 @@
 
-const MODEL = "gemini-2.5-flash";
+const MODEL = "gemini-3-flash";
 
 export default async function handler(req, res) {
   res.setHeader("Cache-Control", "no-store");
@@ -35,7 +35,7 @@ export default async function handler(req, res) {
     });
   }
 
-  // 4. 设置请求超时
+  // 4. 设置20秒超时
   const controller = new AbortController();
 
   const timeout = setTimeout(() => {
@@ -43,7 +43,7 @@ export default async function handler(req, res) {
   }, 20000);
 
   try {
-    // 5. 调用 Gemini API
+    // 5. 调用 Gemini 3 Flash
     const upstream = await fetch(
       `https://generativelanguage.googleapis.com/v1beta/models/${MODEL}:generateContent`,
       {
@@ -112,7 +112,6 @@ export default async function handler(req, res) {
         };
       }
 
-      // 只记录必要诊断信息，不记录 API Key
       console.error("Gemini API error:", {
         status: upstream.status,
         code: googleError.code,
